@@ -14,8 +14,16 @@ import string, urllib, os
 import re
 import operator
 import logging
+from textwrap import dedent
 
 log = logging.getLogger(__name__)
+
+def trim(s):
+	"""
+	Trim something like a docstring to remove the whitespace that
+	is common due to indentation and formatting.
+	"""
+	return dedent(s).strip()
 
 def CoerceType(value):
 	"""
