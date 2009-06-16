@@ -395,7 +395,7 @@ class iterQueue(object):
 
 class testSplit(hashSplit):
 	def __init__(self, sequence):
-		raise NotImplementedError, 'This class is just an idea.  Don\'t use it'
+		raise NotImplementedError('This class is just an idea.  Don\'t use it')
 		self.sequence = iter(sequence)
 
 	def __getitem__(self, test):
