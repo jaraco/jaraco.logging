@@ -231,6 +231,10 @@ class ciString(str):
 	True
 	>>> 'Hello World' == s
 	True
+	>>> s.index('O')
+	4
+	#>>> s.split(ciString('O'))
+	#('hell', ' w', 'rld')
 	"""
 	def __cmp__(self, other):
 		return self.lower().__cmp__(other.lower())
@@ -240,7 +244,12 @@ class ciString(str):
 		return hash(self.lower())
 	# cache lower since it's likely to be called frequently.
 	def lower(self):
-		return self.__dict__.setdefault('_lower', str.lower(self))
+		self._lower = super(ciString, self).lower()
+		self.lower = lambda: self._lower
+		return self._lower
+	
+	def index(self, sub):
+		return self.lower().index(sub.lower())
 
 class ciDict(dict):
 	"""A case-insensitive dictionary (keys are compared as insensitive
