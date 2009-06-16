@@ -5,7 +5,7 @@ jaraco.util:
   small functions or classes that don't have a home elsewhere
 """
 
-__author__ = 'Jason R. Coombs <jaraco@sandia.gov>'
+__author__ = 'Jason R. Coombs <jaraco@jaraco.com>'
 __version__ = '$Rev$'[6:-2]
 __svnauthor__ = '$Author$'[9:-2]
 __date__ = '$Date$'[7:-2]
