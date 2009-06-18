@@ -233,8 +233,8 @@ class ciString(str):
 	True
 	>>> s.index('O')
 	4
-	#>>> s.split(ciString('O'))
-	#('hell', ' w', 'rld')
+	>>> s.split(ciString('O')) #doctest: +SKIP
+	('hell', ' w', 'rld')
 	"""
 	def __cmp__(self, other):
 		return self.lower().__cmp__(other.lower())
