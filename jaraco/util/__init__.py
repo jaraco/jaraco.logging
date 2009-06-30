@@ -233,11 +233,16 @@ class ciString(str):
 	True
 	>>> s.index('O')
 	4
-	>>> s.split(ciString('O')) #doctest: +SKIP
-	('hell', ' w', 'rld')
+	>>> s.split('O')
+	['hell', ' w', 'rld']
+	
+	>>> sorted(map(ciString, ['GAMMA', 'alpha', 'Beta']))
+	['alpha', 'Beta', 'GAMMA']
 	"""
-	def __cmp__(self, other):
-		return self.lower().__cmp__(other.lower())
+	def __lt__(self, other):
+		return self.lower() < other.lower()
+	def __gt__(self, other):
+		return self.lower() > other.lower()
 	def __eq__(self, other):
 		return self.lower() == other.lower()
 	def __hash__(self):
@@ -250,6 +255,10 @@ class ciString(str):
 	
 	def index(self, sub):
 		return self.lower().index(sub.lower())
+	
+	def split(self, splitter=' ', maxsplit=0):
+		pattern = re.compile(re.escape(splitter), re.I)
+		return pattern.split(self, maxsplit)
 
 class ciDict(dict):
 	"""A case-insensitive dictionary (keys are compared as insensitive
