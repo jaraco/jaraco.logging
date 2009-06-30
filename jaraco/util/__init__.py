@@ -224,18 +224,23 @@ class splitter(object):
 		return s.split(*self.args)
 
 class ciString(str):
-	"""A case insensitive string class; behaves just like str
+	"""
+	A case insensitive string class; behaves just like str
 	except compares equal when the only variation is case.
 	>>> s = ciString('hello world')
+
 	>>> s == 'Hello World'
 	True
+
 	>>> 'Hello World' == s
 	True
+
 	>>> s.index('O')
 	4
+
 	>>> s.split('O')
 	['hell', ' w', 'rld']
-	
+
 	>>> sorted(map(ciString, ['GAMMA', 'alpha', 'Beta']))
 	['alpha', 'Beta', 'GAMMA']
 	"""
@@ -252,10 +257,10 @@ class ciString(str):
 		self._lower = super(ciString, self).lower()
 		self.lower = lambda: self._lower
 		return self._lower
-	
+
 	def index(self, sub):
 		return self.lower().index(sub.lower())
-	
+
 	def split(self, splitter=' ', maxsplit=0):
 		pattern = re.compile(re.escape(splitter), re.I)
 		return pattern.split(self, maxsplit)
