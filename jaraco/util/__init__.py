@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 
+from __future__ import absolute_import
+
 """
 jaraco.util:
   small functions or classes that don't have a home elsewhere
