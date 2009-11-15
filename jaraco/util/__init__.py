@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 """
 jaraco.util:
@@ -53,7 +53,7 @@ def makeRows(list, nColumns):
 	[(1, 3, 5), (2, 4, None)]
 	"""
 	# calculate the minimum number of rows necessary to fit the list in n Columns
-	nRows = len(list) / nColumns
+	nRows = len(list) // nColumns
 	if len(list) % nColumns:
 		nRows += 1
 	# chunk the list into n Columns of length nRows
@@ -261,7 +261,7 @@ class ciDict(dict):
 
 def randbytes(n):
 	"Returns n random bytes"
-	for i in xrange(n / 4):
+	for i in xrange(n // 4):
 		for byte in struct.pack('f', random.random()):
 			yield byte
 	for byte in struct.pack('f', random.random())[: n % 4]:
