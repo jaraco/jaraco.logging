@@ -454,3 +454,5 @@ class PasswordGenerator(object):
 	def random_byte_generator():
 		while True:
 			yield chr(random.randint(0, 255))
+
+callable = lambda obj: hasattr(obj, '__call__')
