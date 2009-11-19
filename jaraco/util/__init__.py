@@ -96,9 +96,11 @@ def ReplaceList(object, substitutions):
 	return object
 
 def ReverseLists(lists):
-	tLists = zip(*lists)
-	tLists.reverse()
-	return zip(*tLists)
+	"""
+	>>> ReverseLists([[1,2,3], [4,5,6]])
+	[[3, 2, 1], [6, 5, 4]]
+	"""
+	return list(map(reversed, lists))
 
 from jaraco import dateutil
 import logging, time
