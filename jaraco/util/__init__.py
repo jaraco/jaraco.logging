@@ -263,7 +263,7 @@ class ciDict(dict):
 
 def randbytes(n):
 	"Returns n random bytes"
-	for i in xrange(n // 4):
+	for i in range(n // 4):
 		for byte in struct.pack('f', random.random()):
 			yield byte
 	for byte in struct.pack('f', random.random())[: n % 4]:
@@ -310,7 +310,7 @@ class hashSplit(dict):
 	('', None)
 	>>> tuple(trueItems)
 	('Test', 30)
-	>>> everyThirdSplit = hashSplit(xrange(99), lambda n: n%3)
+	>>> everyThirdSplit = hashSplit(range(99), lambda n: n%3)
 	>>> zeros = everyThirdSplit[0]
 	>>> ones = everyThirdSplit[1]
 	>>> twos = everyThirdSplit[2]
@@ -363,7 +363,7 @@ class hashSplit(dict):
 		except StopIteration:
 			pass
 		createEmptyIterable = lambda x: iter([])
-		return self.values() + map(createEmptyIterable, xrange(n - len(self)))
+		return self.values() + map(createEmptyIterable, range(n - len(self)))
 
 class iterQueue(object):
 	def __init__(self, getNext):
@@ -413,7 +413,7 @@ class testSplit(hashSplit):
 
 def ordinalth(n):
 	"""Return the ordinal with 'st', 'th', or 'nd' appended as appropriate.
-	>>> map(ordinalth, xrange(-5, 22))
+	>>> list(map(ordinalth, range(-5, 22)))
 	['-5th', '-4th', '-3rd', '-2nd', '-1st', '0th', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', '13th', '14th', '15th', '16th', '17th', '18th', '19th', '20th', '21st']
 	"""
 	# zero through three map to 'th', 'st', 'nd', 'rd'
