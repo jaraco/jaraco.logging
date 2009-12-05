@@ -27,10 +27,13 @@ def trim(s):
 	"""
 	return dedent(s).strip()
 
-def CoerceType(value):
+def coerce_number(value):
 	"""
-	CoerceType takes a value and attempts to convert it to a float, long, or int.
-	If none of the conversions are successful, the original value is returned.
+	coerce_number takes a value and attempts to convert it to a float,
+	or int.
+
+	If none of the conversions are successful, the original value is
+	returned.
 	
 	>>> CoerceType('3')
 	3
@@ -39,38 +42,49 @@ def CoerceType(value):
 	'foo'
 	"""
 	result = value
-	for transform in (float, long, int):
+	from jaraco.util.py26compat import int
+	for transform in (float, int):
 		try: result = transform(value)
 		except ValueError: pass
 
 	return result
 
-def makeRows(list, nColumns):
-	"""Make a list into rows of nColumns columns
-	>>> makeRows([1, 2, 3, 4, 5], 2)
-	[(1, 4), (2, 5), (3, None)]
-	>>> makeRows([1, 2, 3, 4, 5], 3)
-	[(1, 3, 5), (2, 4, None)]
+def make_rows(num_columns, seq):
 	"""
-	# calculate the minimum number of rows necessary to fit the list in n Columns
-	nRows = len(list) // nColumns
-	if len(list) % nColumns:
-		nRows += 1
-	# chunk the list into n Columns of length nRows
-	result = chunkGenerator(list, nRows)
-	# result is now a list of columns... transpose it to return a list of rows
-	return map(None, *result)
+	Make a sequence into rows of num_columns columns
+	>>> tuple(make_rows(2, [1, 2, 3, 4, 5]))
+	((1, 4), (2, 5), (3, None))
+	>>> tuple(make_rows(3, [1, 2, 3, 4, 5]))
+	((1, 3, 5), (2, 4, None))
+	"""
+	# calculate the minimum number of rows necessary to fit the list in
+	# num_columns Columns
+	num_rows, partial = divmod(len(seq), num_columns)
+	if partial:
+		num_rows += 1
+	# break the seq into num_columns of length num_rows
+	from jaraco.util.iter_ import grouper
+	result = grouper(num_rows, seq)
+	# result is now a list of columns... transpose it to return a list
+	# of rows
+	return zip(*result)
 
-def chunkGenerator(seq, size):
-	"""Take a sequence and break it up into chunks of the specified size.
-The last chunk may be smaller than size.
->>> tuple(chunkGenerator('foobarbaz', 3))
-('foo', 'bar', 'baz')
->>> tuple(chunkGenerator([], 42))
-()
->>> tuple(chunkGenerator(range(10), 3))
-([0, 1, 2], [3, 4, 5], [6, 7, 8], [9])
-"""
+def grouper(size, seq):
+	"""
+	Take a sequence and break it up into chunks of the specified size.
+	The last chunk may be smaller than size. `seq` must follow the
+	0-indexed sequence protocol.
+	
+	This works very similar to jaraco.util.iter_.grouper_nofill, except
+	it works with strings as well.
+	
+	>>> tuple(grouper(3, 'foobarbaz'))
+	('foo', 'bar', 'baz')
+	>>> tuple(grouper(42, []))
+	()
+	>>> tuple(grouper(3, list(range(10))))
+	([0, 1, 2], [3, 4, 5], [6, 7, 8], [9])
+	"""
 	for i in range(0, len(seq), size):
 		yield seq[i:i+size]
 
@@ -100,7 +114,8 @@ def ReverseLists(lists):
 	>>> ReverseLists([[1,2,3], [4,5,6]])
 	[[3, 2, 1], [6, 5, 4]]
 	"""
-	return list(map(reversed, lists))
+	
+	return list(map(list, map(reversed, lists)))
 
 from jaraco import dateutil
 import logging, time
@@ -268,21 +283,6 @@ def randbytes(n):
 			yield byte
 	for byte in struct.pack('f', random.random())[: n % 4]:
 		yield byte
-
-def flatten(l):
-	"""flatten takes a list of lists and returns a single list with each element from the
-	sublists.  For example,
-	>>> flatten(['a','b',['c','d',['e','f'],'g'],'h']) == ['a','b','c','d','e','f','g','h']
-	True
-	"""
-	if not isinstance(l, (list, tuple)):
-		result = [l]
-	elif filter(lambda x: isinstance(x, (list, tuple)), l):
-		result = []
-		map(result.extend, map(flatten, l))
-	else:
-		result = l
-	return result
 
 def readChunks(file, chunkSize = 2048, updateFunc = lambda x: None):
 	"""Read file in chunks of size chunkSize (or smaller).
