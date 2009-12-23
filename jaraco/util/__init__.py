@@ -12,11 +12,15 @@ __version__ = '$Rev$'[6:-2]
 __svnauthor__ = '$Author$'[9:-2]
 __date__ = '$Date$'[7:-2]
 
-import string, urllib, os
+import string
+import urllib
+import os
+import sys
 import re
 import operator
 import logging
 from textwrap import dedent
+from jaraco.util.py26compat import basestring
 
 log = logging.getLogger(__name__)
 
@@ -35,10 +39,10 @@ def coerce_number(value):
 	If none of the conversions are successful, the original value is
 	returned.
 	
-	>>> CoerceType('3')
+	>>> coerce_number('3')
 	3
 	
-	>>> CoerceType('foo')
+	>>> coerce_number('foo')
 	'foo'
 	"""
 	result = value
@@ -242,40 +246,6 @@ class splitter(object):
 	def __call__(self, s):
 		return s.split(*self.args)
 
-# kept for backward compatibility
-from .string import FoldedCase as ciString
-
-class ciDict(dict):
-	"""A case-insensitive dictionary (keys are compared as insensitive
-	if they are strings.
-	>>> d = ciDict()
-	>>> d['heLlo'] = 'world'
-	>>> d
-	{'heLlo': 'world'}
-	>>> d['hello']
-	'world'
-	>>> ciDict({'heLlo': 'world'})
-	{'heLlo': 'world'}
-	>>> d = ciDict({'heLlo': 'world'})
-	>>> d['hello']
-	'world'
-	>>> d
-	{'heLlo': 'world'}
-	>>> d = ciDict({'heLlo': 'world', 'Hello': 'world'})
-	>>> d
-	{'heLlo': 'world'}
-	"""
-	def __setitem__(self, key, val):
-		if isinstance(key, basestring):
-			key = ciString(key)
-		dict.__setitem__(self, key, val)
-
-	def __init__(self, *args, **kargs):
-		# build a dictionary using the default constructs
-		d = dict(*args, **kargs)
-		# build this dictionary using case insensitivity.
-		map(self.__setitem__, d.keys(), d.values())
-
 def randbytes(n):
 	"Returns n random bytes"
 	for i in range(n // 4):
@@ -293,23 +263,34 @@ def readChunks(file, chunkSize = 2048, updateFunc = lambda x: None):
 		updateFunc(len(res))
 		yield res
 
-def binarySplit(seq, func = bool):
-	"""Split a sequence into two sequences:  the first is elements that return
-	True for func(element) and the second for False == func(element).
-	By default, func = bool, so uses the truth value of the object."""
-	queues = hashSplit(seq, func)
+def bisect(seq, func = bool):
+	"""
+	Split a sequence into two sequences:  the first is elements that
+	return True for func(element) and the second for False ==
+	func(element).
+	By default, func = bool, so uses the truth value of the object.
+	"""
+	queues = groupby_saved(seq, func)
 	return queues.getFirstNQueues(2)
 
-class hashSplit(dict):
-	"""Split a sequence into n sequences where n is determined by the number
-	of distinct values returned by hash(func(element)) for each element in the sequence.
-	>>> truthsplit = hashSplit(['Test', '', 30, None], bool)
+class groupby_saved(object):
+	"""
+	Split a sequence into n sequences where n is determined by the
+	number of distinct values returned by a key function applied to each
+	element in the sequence.
+	
+	>>> truthsplit = groupby_saved(['Test', '', 30, None], bool)
+	>>> truthsplit['x'] # doctest: +SKIP
+	Traceback (most recent item last):
+	...
+	KeyError: 'x'
 	>>> trueItems = truthsplit[True]
 	>>> falseItems = truthsplit[False]
 	>>> tuple(falseItems)
 	('', None)
 	>>> tuple(trueItems)
 	('Test', 30)
+	
 	>>> everyThirdSplit = hashSplit(range(99), lambda n: n%3)
 	>>> zeros = everyThirdSplit[0]
 	>>> ones = everyThirdSplit[1]
@@ -328,88 +309,72 @@ class hashSplit(dict):
 	def __init__(self, sequence, func = lambda x: x):
 		self.sequence = iter(sequence)
 		self.func = func
+		self.queues = dict()
 
-	def __getitem__(self, i):
+	def __getitem__(self, key):
 		try:
-			return dict.__getitem__(self, i)
+			return self.queues[key]
 		except KeyError:
-			return self.__searchForItem__(i)
+			return self.__find_queue__(key)
 
-	def __getNext__(self):
+	def __fetch__(self):
 		"get the next item from the sequence and queue it up"
-		item = self.sequence.next()
-		try:
-			queue = dict.__getitem__(self, self.func(item))
-		except KeyError:
-			queue = iterQueue(self.__getNext__)
-			self[self.func(item)] = queue
+		item = next(self.sequence)
+		key = self.func(item)
+		queue = self.queues.setdefault(key, FetchingQueue(self.__fetch__))
 		queue.enqueue(item)
 
-	def __searchForItem__(self, i):
-		"search for the queue that would hold item i"
+	def __find_queue__(self, key):
+		"search for the queue indexed by key"
 		try:
-			self.__getNext__()
-			return self[i]
+			while not key in self.queues:
+				self.__fetch__()
+			return self.queues[key]
 		except StopIteration:
-			return iter([])
+			raise KeyError(key)
 
-	def getFirstNQueues(self, n):
-		"""Run through the sequence until n queues are created and return
-		them.  If fewer are created, return those plus empty iterables to
-		compensate."""
+	def get_first_n_queues(self, n):
+		"""
+		Run through the sequence until n queues are created and return
+		them. If fewer are created, return those plus empty iterables to
+		compensate.
+		"""
 		try:
-			while len(self) < n:
-				self.__getNext__()
+			while len(self.queues) < n:
+				self.__fetch__()
 		except StopIteration:
 			pass
-		createEmptyIterable = lambda x: iter([])
-		return self.values() + map(createEmptyIterable, range(n - len(self)))
+		empty_iter_factory = lambda: iter([])
+		values = list(self.queues.values())
+		missing = n - len(values)
+		values.extend(iter([]) for n in range(missing))
+		return values
 
-class iterQueue(object):
-	def __init__(self, getNext):
-		self.queued = []
-		self.getNext = getNext
+class FetchingQueue(list):
+	"""
+	An attractive queue ... just kidding.
+	
+	A FIFO Queue that is supplied with a function to inject more into
+	the queue if it is empty.
+	
+	>>> values = range(10)
+	>>> get_value = lambda: globals()['q'].enqueue(next(values))
+	>>> q = FetchingQueue(get_value)
+	
+	"""
+	def __init__(self, fetcher):
+		self._fetcher = fetcher
 
-	def __iter__(self):
-		return self
+	def __next__(self):
+		while not self:
+			self._fetcher()
+		return self.pop()
 
-	def next(self):
-		while not self.queued:
-			self.getNext()
-		return self.queued.pop()
+	if sys.version_info < (3,):
+		next = __next__
 
 	def enqueue(self, item):
-		self.queued.insert(0, item)
-
-class testSplit(hashSplit):
-	def __init__(self, sequence):
-		raise NotImplementedError('This class is just an idea.  Don\'t use it')
-		self.sequence = iter(sequence)
-
-	def __getitem__(self, test):
-		try:
-			return dict.__getitem__(self, test)
-		except KeyError:
-			return self.__searchForTest__(test)
-
-	def __searchForTest__(self, test):
-		"search for the queue that holds items that return true for test"
-		try:
-			self[test] = self.__getNext__()
-			return self[test]
-		except StopIteration:
-			return iter([])
-
-	def __getNext__(self):
-		"get the next item from the sequence and queue it up"
-		item = self.sequence.next()
-		try:
-			queue = dict.__getitem__(self, self.func(item))
-		except KeyError:
-			queue = iterQueue(self.__getNext__)
-			self[self.func(item)] = queue
-		queue.enqueue(item)
-
+		self.insert(0, item)
 
 def ordinalth(n):
 	"""Return the ordinal with 'st', 'th', or 'nd' appended as appropriate.
