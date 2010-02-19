@@ -20,7 +20,6 @@ import re
 import operator
 import logging
 from textwrap import dedent
-from jaraco.util.py26compat import basestring
 
 log = logging.getLogger(__name__)
 
@@ -40,14 +39,13 @@ def coerce_number(value):
 	returned.
 	
 	>>> coerce_number('3')
-	3
+	3L
 	
 	>>> coerce_number('foo')
 	'foo'
 	"""
 	result = value
-	from jaraco.util.py26compat import int
-	for transform in (float, int):
+	for transform in (float, long):
 		try: result = transform(value)
 		except ValueError: pass
 
@@ -357,21 +355,23 @@ class FetchingQueue(list):
 	A FIFO Queue that is supplied with a function to inject more into
 	the queue if it is empty.
 	
-	>>> values = range(10)
+	>>> values = iter(xrange(10))
 	>>> get_value = lambda: globals()['q'].enqueue(next(values))
 	>>> q = FetchingQueue(get_value)
+	>>> tuple(q) == range(10)
+	True
 	
 	"""
 	def __init__(self, fetcher):
 		self._fetcher = fetcher
 
-	def __next__(self):
+	def next(self):
 		while not self:
 			self._fetcher()
 		return self.pop()
 
-	if sys.version_info < (3,):
-		next = __next__
+	def __iter__(self):
+		return self
 
 	def enqueue(self, item):
 		self.insert(0, item)
