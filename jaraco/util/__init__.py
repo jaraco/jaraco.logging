@@ -358,9 +358,12 @@ class FetchingQueue(list):
 	>>> values = iter(xrange(10))
 	>>> get_value = lambda: globals()['q'].enqueue(next(values))
 	>>> q = FetchingQueue(get_value)
-	>>> tuple(q) == range(10)
+	>>> [x for x in q] == range(10)
 	True
 	
+	Note that tuple(q) or list(q) would not have worked above because
+	tuple(q) just copies the elements in the list (of which there are
+	none).
 	"""
 	def __init__(self, fetcher):
 		self._fetcher = fetcher
