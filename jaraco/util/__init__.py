@@ -278,30 +278,30 @@ class groupby_saved(object):
 	element in the sequence.
 	
 	>>> truthsplit = groupby_saved(['Test', '', 30, None], bool)
-	>>> truthsplit['x'] # doctest: +SKIP
-	Traceback (most recent item last):
+	>>> truthsplit['x']
+	Traceback (most recent call last):
 	...
 	KeyError: 'x'
 	>>> trueItems = truthsplit[True]
 	>>> falseItems = truthsplit[False]
-	>>> tuple(falseItems)
+	>>> tuple(iter(falseItems))
 	('', None)
-	>>> tuple(trueItems)
+	>>> tuple(iter(trueItems))
 	('Test', 30)
 	
-	>>> everyThirdSplit = hashSplit(range(99), lambda n: n%3)
+	>>> everyThirdSplit = groupby_saved(range(99), lambda n: n%3)
 	>>> zeros = everyThirdSplit[0]
 	>>> ones = everyThirdSplit[1]
 	>>> twos = everyThirdSplit[2]
-	>>> zeros.next()
+	>>> next(zeros)
 	0
-	>>> zeros.next()
+	>>> next(zeros)
 	3
-	>>> ones.next()
+	>>> next(ones)
 	1
-	>>> twos.next()
+	>>> next(twos)
 	2
-	>>> ones.next()
+	>>> next(ones)
 	4
 	"""
 	def __init__(self, sequence, func = lambda x: x):
@@ -374,7 +374,8 @@ class FetchingQueue(list):
 		return self.pop()
 
 	def __iter__(self):
-		return self
+		while True:
+			yield next(self)
 
 	def enqueue(self, item):
 		self.insert(0, item)
