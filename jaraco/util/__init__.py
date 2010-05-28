@@ -19,6 +19,7 @@ import sys
 import re
 import operator
 import logging
+import datetime
 from textwrap import dedent
 
 log = logging.getLogger(__name__)
@@ -90,17 +91,46 @@ def grouper(size, seq):
 	for i in range(0, len(seq), size):
 		yield seq[i:i+size]
 
-import datetime
-
-class QuickTimer(object):
+class Stopwatch(object):
+	"""
+	A simple stopwatch which starts automatically.
+	
+	>>> w = Stopwatch()
+	>>> _1_sec = datetime.timedelta(seconds=1)
+	>>> w.split() < _1_sec
+	True
+	>>> import time
+	>>> time.sleep(1.0)
+	>>> w.split() >= _1_sec
+	True
+	>>> w.stop() >= _1_sec
+	True
+	>>> w.reset()
+	>>> w.start()
+	>>> w.split() < _1_sec
+	True
+	"""
 	def __init__(self):
-		self.Start()
+		self.reset()
+		self.start()
 
-	def Start(self):
-		self.startTime = datetime.datetime.now()
+	def reset(self):
+		self.elapsed = datetime.timedelta(0)
+		if hasattr(self, 'start_time'):
+			del self.start_time
 
-	def Stop(self):
-		return datetime.datetime.now() - self.startTime
+	def start(self):
+		self.start_time = datetime.datetime.now()
+
+	def stop(self):
+		stop_time = datetime.datetime.now()
+		self.elapsed += stop_time - self.start_time
+		del self.start_time
+		return self.elapsed
+
+	def split(self):
+		local_duration = datetime.datetime.now() - self.start_time
+		return self.elapsed + local_duration
 
 def ReplaceList(object, substitutions):
 	try:
