@@ -1,12 +1,32 @@
 from __future__ import absolute_import
 
+import logging
+import time
+import warnings
+
 from jaraco import dateutil
-import logging, time
 
 def add_options(parser):
-	parser.add_option('-l', '--log-level', default='info', help="Set log level (DEBUG, INFO, WARNING, ERROR)")
+	warnings.warn("add_options is deprecated. use add_arguments", DeprecationWarning)
+	return add_arguments(parser)
+
+def add_arguments(parser):
+	"""
+	Add arguments to an ArgumentParser or OptionParser for purposes of
+	grabbing a logging level.
+	"""
+	adder = (
+		getattr(parser, 'add_argument', None)
+		or getattr(parser, 'add_option')
+	)
+	adder('-l', '--log-level', default='info',
+		help="Set log level (DEBUG, INFO, WARNING, ERROR)")
 
 def setup(options):
+	"""
+	Setup logging with options or arguments from an OptionParser or
+	ArgumentParser
+	"""
 	logging.basicConfig(level=getattr(logging, options.log_level.upper()))
 
 class TimestampFileHandler(logging.StreamHandler):
