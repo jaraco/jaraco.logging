@@ -20,6 +20,9 @@ import re
 import operator
 import logging
 import datetime
+import codecs
+import random
+import itertools
 from textwrap import dedent
 
 log = logging.getLogger(__name__)
@@ -311,8 +314,6 @@ def ordinalth(n):
 	forceth |= abs(n) % 100 in (11, 12, 13)
 	index = [ones, 0][forceth]
 	return '%d%s' % (n, t[index])
-
-import codecs, random, itertools
 
 class PasswordGenerator(object):
 	"""
