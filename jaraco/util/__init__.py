@@ -38,10 +38,10 @@ def coerce_number(value):
 
 	If none of the conversions are successful, the original value is
 	returned.
-	
+
 	>>> coerce_number('3')
 	3L
-	
+
 	>>> coerce_number('foo')
 	'foo'
 	"""
@@ -66,7 +66,7 @@ def make_rows(num_columns, seq):
 	if partial:
 		num_rows += 1
 	# break the seq into num_columns of length num_rows
-	from jaraco.util.iter_ import grouper
+	from .itertools import grouper
 	result = grouper(num_rows, seq)
 	# result is now a list of columns... transpose it to return a list
 	# of rows
@@ -77,10 +77,10 @@ def grouper(size, seq):
 	Take a sequence and break it up into chunks of the specified size.
 	The last chunk may be smaller than size. `seq` must follow the
 	0-indexed sequence protocol.
-	
+
 	This works very similar to jaraco.util.iter_.grouper_nofill, except
 	it works with strings as well.
-	
+
 	>>> tuple(grouper(3, 'foobarbaz'))
 	('foo', 'bar', 'baz')
 	>>> tuple(grouper(42, []))
@@ -94,7 +94,7 @@ def grouper(size, seq):
 class Stopwatch(object):
 	"""
 	A simple stopwatch which starts automatically.
-	
+
 	>>> w = Stopwatch()
 	>>> _1_sec = datetime.timedelta(seconds=1)
 	>>> w.split() < _1_sec
@@ -146,7 +146,7 @@ def ReverseLists(lists):
 	>>> ReverseLists([[1,2,3], [4,5,6]])
 	[[3, 2, 1], [6, 5, 4]]
 	"""
-	
+
 	return list(map(list, map(reversed, lists)))
 
 class splitter(object):
@@ -193,7 +193,7 @@ class groupby_saved(object):
 	Split a sequence into n sequences where n is determined by the
 	number of distinct values returned by a key function applied to each
 	element in the sequence.
-	
+
 	>>> truthsplit = groupby_saved(['Test', '', 30, None], bool)
 	>>> truthsplit['x']
 	Traceback (most recent call last):
@@ -205,7 +205,7 @@ class groupby_saved(object):
 	('', None)
 	>>> tuple(iter(trueItems))
 	('Test', 30)
-	
+
 	>>> everyThirdSplit = groupby_saved(range(99), lambda n: n%3)
 	>>> zeros = everyThirdSplit[0]
 	>>> ones = everyThirdSplit[1]
@@ -268,16 +268,16 @@ class groupby_saved(object):
 class FetchingQueue(list):
 	"""
 	An attractive queue ... just kidding.
-	
+
 	A FIFO Queue that is supplied with a function to inject more into
 	the queue if it is empty.
-	
+
 	>>> values = iter(xrange(10))
 	>>> get_value = lambda: globals()['q'].enqueue(next(values))
 	>>> q = FetchingQueue(get_value)
 	>>> [x for x in q] == range(10)
 	True
-	
+
 	Note that tuple(q) or list(q) would not have worked above because
 	tuple(q) just copies the elements in the list (of which there are
 	none).
