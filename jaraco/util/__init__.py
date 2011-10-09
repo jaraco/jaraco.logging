@@ -130,7 +130,14 @@ class Stopwatch(object):
 		local_duration = datetime.datetime.now() - self.start_time
 		return self.elapsed + local_duration
 
-def ReplaceList(object, substitutions):
+def replace_list(object, substitutions):
+	"""
+	Perform a number of substitutions on `object` using object's .replace
+	method.
+
+	>>> replace_list('alpha-beta', [('beta', 'omega'),])
+	'alpha-omega'
+	"""
 	try:
 		for old, new in substitutions:
 			object = object.replace(old, new)
@@ -139,9 +146,9 @@ def ReplaceList(object, substitutions):
 		pass
 	return object
 
-def ReverseLists(lists):
+def reverse_lists(lists):
 	"""
-	>>> ReverseLists([[1,2,3], [4,5,6]])
+	>>> reverse_lists([[1,2,3], [4,5,6]])
 	[[3, 2, 1], [6, 5, 4]]
 	"""
 
@@ -152,7 +159,7 @@ class splitter(object):
 	>>> s = splitter(',')
 	>>> s('hello, world, this is your, master calling')
 	['hello', ' world', ' this is your', ' master calling']
-"""
+	"""
 	def __init__(self, *args):
 		self.args = args
 
@@ -167,7 +174,7 @@ def randbytes(n):
 	for byte in struct.pack('f', random.random())[: n % 4]:
 		yield byte
 
-def readChunks(file, chunkSize = 2048, updateFunc = lambda x: None):
+def read_chunks(file, chunkSize = 2048, updateFunc = lambda x: None):
 	"""Read file in chunks of size chunkSize (or smaller).
 	If updateFunc is specified, call it on every chunk with the amount read."""
 	while(1):
