@@ -6,7 +6,7 @@ import time
 import datetime
 import string
 
-from jaraco import dateutil
+from jaraco import tempora
 
 def log_level(level_string):
 	"""
@@ -60,8 +60,8 @@ class TimestampFileHandler(logging.StreamHandler):
 		"""
 		self._period = period
 		if period:
-			self._period_seconds = dateutil.get_period_seconds(self._period)
-			self._date_format = dateutil.get_date_format_string(
+			self._period_seconds = tempora.get_period_seconds(self._period)
+			self._date_format = tempora.get_date_format_string(
 				self._period_seconds)
 		else:
 			self._period_seconds = 0
