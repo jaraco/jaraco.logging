@@ -6,6 +6,8 @@ import time
 import datetime
 import string
 
+from six.moves import http_client
+
 from jaraco import tempora
 
 def log_level(level_string):
@@ -35,6 +37,18 @@ def setup(options, **kwargs):
 	params = dict(kwargs)
 	params.update(level=options.log_level)
 	logging.basicConfig(**params)
+
+def setup_requests_logging(level):
+	"""
+	Setup logging for 'requests' such that it logs details about the
+	connection, headers, etc.
+	"""
+	requests_log = logging.getLogger("requests.packages.urllib3")
+	requests_log.setLevel(level)
+	requests_log.propagate = True
+
+	# enable debugging at httplib level
+	http_client.HTTPConnection.debuglevel = level <= logging.DEBUG
 
 class TimestampFileHandler(logging.StreamHandler):
 	"""
