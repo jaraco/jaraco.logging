@@ -8,7 +8,8 @@ import string
 
 from six.moves import http_client
 
-from jaraco import tempora
+import tempora
+
 
 def log_level(level_string):
 	"""
