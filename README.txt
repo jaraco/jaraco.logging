@@ -1,2 +1,4 @@
 jaraco.logging
 ==============
+
+Additional facilities to supplement Python's stdlib logging module.
