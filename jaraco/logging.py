@@ -14,6 +14,9 @@ import tempora
 def log_level(level_string):
 	"""
 	Return a log level for a string
+
+	>>> log_level('DEBUG') == logging.DEBUG
+	True
 	"""
 	return getattr(logging, level_string.upper())
 
