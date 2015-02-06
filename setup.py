@@ -18,6 +18,10 @@ setup_params = dict(
 	long_description=long_description,
 	url="https://bitbucket.org/jaraco/jaraco.logging",
 	packages=setuptools.find_packages(),
+	install_requires=[
+		'tempora',
+		'six',
+	],
 	setup_requires=[
 		'hgtools',
 		'pytest-runner',
