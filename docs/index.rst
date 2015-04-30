@@ -1,6 +1,12 @@
 Welcome to jaraco.logging documentation!
 ========================================
 
+.. toctree::
+   :maxdepth: 1
+
+   history
+
+
 .. automodule:: jaraco.logging
     :members:
     :undoc-members:
