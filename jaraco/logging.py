@@ -20,7 +20,7 @@ def log_level(level_string):
 	"""
 	return getattr(logging, level_string.upper())
 
-def add_arguments(parser):
+def add_arguments(parser, default_level=logging.INFO):
 	"""
 	Add arguments to an ArgumentParser or OptionParser for purposes of
 	grabbing a logging level.
@@ -29,7 +29,7 @@ def add_arguments(parser):
 		getattr(parser, 'add_argument', None)
 		or getattr(parser, 'add_option')
 	)
-	adder('-l', '--log-level', default=logging.INFO, type=log_level,
+	adder('-l', '--log-level', default=default_level, type=log_level,
 		help="Set log level (DEBUG, INFO, WARNING, ERROR)")
 
 def setup(options, **kwargs):
