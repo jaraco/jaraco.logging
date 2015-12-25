@@ -1,3 +1,10 @@
+1.3
+===
+
+Move hosting to github.
+
+Fix test failure due to version detection.
+
 1.2
 ===
 
