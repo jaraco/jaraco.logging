@@ -1,4 +1,4 @@
-Welcome to jaraco.logging documentation!
+Welcome to skeleton documentation!
 ========================================
 
 .. toctree::
@@ -7,7 +7,7 @@ Welcome to jaraco.logging documentation!
    history
 
 
-.. automodule:: jaraco.logging
+.. automodule:: skeleton
     :members:
     :undoc-members:
     :show-inheritance:
