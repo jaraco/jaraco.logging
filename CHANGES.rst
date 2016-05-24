@@ -3,6 +3,8 @@
 
 Added some nominal documentation.
 
+Implemented automatic deploys using Travis-CI.
+
 1.3
 ===
 
