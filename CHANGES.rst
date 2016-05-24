@@ -1,3 +1,8 @@
+1.4
+===
+
+Added some nominal documentation.
+
 1.3
 ===
 
