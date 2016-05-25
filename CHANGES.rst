@@ -1,3 +1,9 @@
+1.5
+===
+
+Allow log level to be passed on the command-line
+as a numeric value as well.
+
 1.4
 ===
 
