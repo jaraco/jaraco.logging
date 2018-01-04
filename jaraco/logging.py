@@ -17,7 +17,11 @@ def log_level(level_string):
 
 	>>> log_level('DEBUG') == logging.DEBUG
 	True
+	>>> log_level('30') == logging.WARNING
+	True
 	"""
+	if level_string.isdigit():
+		return int(level_string)
 	return getattr(logging, level_string.upper())
 
 def add_arguments(parser, default_level=logging.INFO):

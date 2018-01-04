@@ -1,7 +1,13 @@
-1.4.2
+1.5.1
 =====
 
 Refresh distribution package.
+
+1.5
+===
+
+Allow log level to be passed on the command-line
+as a numeric value as well.
 
 1.4.1
 =====
