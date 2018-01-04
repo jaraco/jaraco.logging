@@ -1,3 +1,8 @@
+1.4.2
+=====
+
+Refresh distribution package.
+
 1.4.1
 =====
 
