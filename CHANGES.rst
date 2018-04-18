@@ -1,3 +1,8 @@
+1.5.2
+=====
+
+Repair incorrect form of namespace package.
+
 1.5.1
 =====
 
