@@ -24,6 +24,7 @@ def log_level(level_string):
 		return int(level_string)
 	return getattr(logging, level_string.upper())
 
+
 def add_arguments(parser, default_level=logging.INFO):
 	"""
 	Add arguments to an ArgumentParser or OptionParser for purposes of
@@ -33,8 +34,10 @@ def add_arguments(parser, default_level=logging.INFO):
 		getattr(parser, 'add_argument', None)
 		or getattr(parser, 'add_option')
 	)
-	adder('-l', '--log-level', default=default_level, type=log_level,
+	adder(
+		'-l', '--log-level', default=default_level, type=log_level,
 		help="Set log level (DEBUG, INFO, WARNING, ERROR)")
+
 
 def setup(options, **kwargs):
 	"""
@@ -45,6 +48,7 @@ def setup(options, **kwargs):
 	params = dict(kwargs)
 	params.update(level=options.log_level)
 	logging.basicConfig(**params)
+
 
 def setup_requests_logging(level):
 	"""
@@ -57,6 +61,7 @@ def setup_requests_logging(level):
 
 	# enable debugging at httplib level
 	http_client.HTTPConnection.debuglevel = level <= logging.DEBUG
+
 
 class TimestampFileHandler(logging.StreamHandler):
 	"""
@@ -115,8 +120,10 @@ class TimestampFileHandler(logging.StreamHandler):
 		dt = datetime.datetime.utcfromtimestamp(t)
 		# append the datestring to the filename
 		# workaround for datetime.strftime not handling '' properly
-		appended_date = (dt.strftime(self._date_format)
-			if self._date_format != '' else '')
+		appended_date = (
+			dt.strftime(self._date_format)
+			if self._date_format != '' else ''
+		)
 		if appended_date:
 			# in the future, it would be nice for this format
 			#  to be supplied as a parameter.
@@ -148,7 +155,9 @@ class TimestampFileHandler(logging.StreamHandler):
 		"""
 		try:
 			self.stream.close()
-		except AttributeError: pass
+		except AttributeError:
+			pass
+
 
 class LogFileWrapper(object):
 	"""
@@ -161,7 +170,7 @@ class LogFileWrapper(object):
 	is received.  Each line of text is send to the
 	logger separately.
 	"""
-	def __init__(self, name, lvl = logging.DEBUG):
+	def __init__(self, name, lvl=logging.DEBUG):
 		self.logger = logging.getLogger(name)
 		self.lvl = lvl
 		self.queued = ''
