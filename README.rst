@@ -4,7 +4,10 @@
 .. image:: https://img.shields.io/pypi/pyversions/jaraco.logging.svg
 
 .. image:: https://img.shields.io/travis/jaraco/jaraco.logging/master.svg
-   :target: http://travis-ci.org/jaraco/jaraco.logging
+   :target: https://travis-ci.org/jaraco/jaraco.logging
+
+.. .. image:: https://img.shields.io/appveyor/ci/jaraco/skeleton/master.svg
+..    :target: https://ci.appveyor.com/project/jaraco/skeleton/branch/master
 
 .. image:: https://readthedocs.org/projects/jaracologging/badge/?version=latest
    :target: https://jaracologging.readthedocs.io/en/latest/?badge=latest
