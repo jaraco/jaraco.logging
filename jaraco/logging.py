@@ -1,12 +1,9 @@
-from __future__ import absolute_import, unicode_literals
-
 import os
 import logging
 import time
 import datetime
 import string
-
-from six.moves import http_client
+import http.client
 
 import tempora
 
@@ -61,7 +58,7 @@ def setup_requests_logging(level):
     requests_log.propagate = True
 
     # enable debugging at httplib level
-    http_client.HTTPConnection.debuglevel = level <= logging.DEBUG
+    http.client.HTTPConnection.debuglevel = level <= logging.DEBUG
 
 
 class TimestampFileHandler(logging.StreamHandler):
