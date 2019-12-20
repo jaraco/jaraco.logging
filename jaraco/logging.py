@@ -174,7 +174,7 @@ class TimestampFileHandler(logging.StreamHandler):
             pass
 
 
-class LogFileWrapper(object):
+class LogFileWrapper:
     """
     Emulates a file to replace stdout or stderr or
     anothe file object and redirects its output to
