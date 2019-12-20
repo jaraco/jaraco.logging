@@ -26,6 +26,9 @@ def add_arguments(parser, default_level=logging.INFO):
     """
     Add arguments to an ArgumentParser or OptionParser for purposes of
     grabbing a logging level.
+
+    >>> import argparse
+    >>> add_arguments(argparse.ArgumentParser())
     """
     adder = getattr(parser, 'add_argument', None) or getattr(parser, 'add_option')
     adder(
@@ -42,6 +45,14 @@ def setup(options, **kwargs):
     Setup logging with options or arguments from an OptionParser or
     ArgumentParser. Also pass any keyword arguments to the basicConfig
     call.
+
+    >>> import argparse
+    >>> parser = argparse.ArgumentParser()
+    >>> add_arguments(parser)
+    >>> monkeypatch = getfixture('monkeypatch')
+    >>> monkeypatch.setattr(logging, 'basicConfig', lambda **kwargs: print(kwargs))
+    >>> setup(parser.parse_args([]))
+    {'level': 20}
     """
     params = dict(kwargs)
     params.update(level=options.log_level)
@@ -52,6 +63,12 @@ def setup_requests_logging(level):
     """
     Setup logging for 'requests' such that it logs details about the
     connection, headers, etc.
+
+    >>> monkeypatch = getfixture('monkeypatch')
+    >>> monkeypatch.setattr(http.client.HTTPConnection, 'debuglevel', None)
+    >>> setup_requests_logging(logging.DEBUG)
+    >>> http.client.HTTPConnection.debuglevel
+    True
     """
     requests_log = logging.getLogger("requests.packages.urllib3")
     requests_log.setLevel(level)
