@@ -1,3 +1,8 @@
+v3.1.0
+======
+
+Refresh packaging. Remove unneeded dependency on six.
+
 v3.0.0
 ======
 
