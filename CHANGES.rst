@@ -1,3 +1,8 @@
+v3.1.2
+======
+
+Refresh packaging. Require Python 3.7 or later.
+
 v3.1.1
 ======
 
