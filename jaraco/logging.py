@@ -1,7 +1,6 @@
 import os
 import logging
 import time
-import datetime
 import string
 import http.client
 
@@ -133,7 +132,7 @@ class TimestampFileHandler(logging.StreamHandler):
         if self._period_seconds:
             t -= t % self._period_seconds
         # convert it to a datetime object for formatting
-        dt = datetime.datetime.utcfromtimestamp(t)
+        dt = tempora.utc.fromtimestamp(t)
         # append the datestring to the filename
         # workaround for datetime.strftime not handling '' properly
         appended_date = (
