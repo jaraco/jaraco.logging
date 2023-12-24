@@ -1,3 +1,12 @@
+v3.3.0
+======
+
+Features
+--------
+
+- Replaced deprecated datetime.utcfromtimestamp. (#3)
+
+
 v3.2.1
 ======
 
