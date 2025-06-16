@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import functools
 import http.client
 import logging
 import os
@@ -7,18 +10,30 @@ import time
 import tempora
 
 
-def log_level(level_string):
+@functools.singledispatch
+def log_level(level_input: str | int):
     """
-    Return a log level for a string
+    Return a log level for a string.
 
     >>> log_level('DEBUG') == logging.DEBUG
     True
     >>> log_level('30') == logging.WARNING
     True
+
+    Let int pass through (useful for typer use).
+
+    >>> log_level(30)
+    30
     """
-    if level_string.isdigit():
-        return int(level_string)
-    return getattr(logging, level_string.upper())
+    assert isinstance(level_input, str)  # assert an invariant to workaround typing bug
+    if level_input.isdigit():
+        return int(level_input)
+    return getattr(logging, level_input.upper())
+
+
+@log_level.register
+def _(level_input: int):
+    return level_input
 
 
 def add_arguments(parser, default_level=logging.INFO):
