@@ -1,8 +1,8 @@
-import os
-import logging
-import time
-import string
 import http.client
+import logging
+import os
+import string
+import time
 
 import tempora
 
