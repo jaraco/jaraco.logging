@@ -1,3 +1,12 @@
+v3.4.0
+======
+
+Features
+--------
+
+- Add support for log_level accepting an integer input.
+
+
 v3.3.0
 ======
 
