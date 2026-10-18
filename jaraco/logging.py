@@ -4,7 +4,6 @@ import functools
 import http.client
 import logging
 import os
-import string
 import time
 
 import tempora
@@ -217,7 +216,7 @@ class LogFileWrapper:
 
     def write(self, data):
         data = self.queued + data
-        data = string.split(data, '\n')
+        data = data.split('\n')
         for line in data[:-1]:
             self.logger.log(self.lvl, line)
         self.queued = data[-1]
