@@ -119,6 +119,7 @@ class TimestampFileHandler(logging.StreamHandler):
         self.mode = mode
         self._set_period(period)
         logging.StreamHandler.__init__(self, None)
+        self.stream = None
 
     def _set_period(self, period):
         """
@@ -140,7 +141,9 @@ class TimestampFileHandler(logging.StreamHandler):
 
     def _use_file(self, filename):
         self._ensure_directory_exists(filename)
-        self.stream = open(filename, self.mode)  # noqa: SIM115 # stream outlives this method
+        previous, self.stream = self.stream, open(filename, self.mode)  # noqa: SIM115 # stream outlives this method
+        if previous is not None:
+            previous.close()
 
     def _ensure_directory_exists(self, filename):
         dirname = os.path.dirname(filename)
@@ -192,10 +195,16 @@ class TimestampFileHandler(logging.StreamHandler):
         """
         Closes the stream.
         """
+        self.acquire()
         try:
-            self.stream.close()
-        except AttributeError:
-            pass
+            try:
+                stream, self.stream = self.stream, None
+                if stream is not None:
+                    stream.close()
+            finally:
+                super().close()
+        finally:
+            self.release()
 
 
 class LogFileWrapper:
